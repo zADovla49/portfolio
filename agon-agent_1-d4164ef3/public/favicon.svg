@@ -1,0 +1,18 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#060D1F"/>
+      <stop offset="100%" stop-color="#02040A"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="16" y1="20" x2="104" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="48%" stop-color="#B8C7DC"/>
+      <stop offset="80%" stop-color="#5E708A"/>
+      <stop offset="100%" stop-color="#E2ECFA"/>
+    </linearGradient>
+  </defs>
+  <polygon points="20,4 100,4 116,20 116,100 100,116 20,116 4,100 4,20" fill="url(#bg)" stroke="#2997FF" stroke-opacity="0.55" stroke-width="2.5"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M16 94 L27.5 94 L33.8 73.5 L47.5 73.5 L47.5 94 L57 94 L57 26 L44.5 26 L16 94 Z M47.5 64 L36.8 64 L47.5 39.2 L47.5 64 Z" fill="url(#silver)"/>
+  <rect x="59" y="24" width="2" height="72" rx="1" fill="#2997FF"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M63 26 L86 26 L103 43 L103 77 L86 94 L63 94 L63 26 Z M72.5 35.5 L72.5 84.5 L82 84.5 L93.5 73 L93.5 47 L82 35.5 L72.5 35.5 Z" fill="url(#silver)"/>
+</svg>
