@@ -1,13 +1,67 @@
-import { createClient } from '@supabase/supabase-js';
-import type { PortfolioBundle, TransmissionItem } from '../types/portfolio';
+import type {
+  PortfolioBundle,
+  PortfolioProject,
+  PortfolioAchievement,
+  PortfolioPillar,
+  TransmissionItem,
+} from '../types/portfolio';
 
 const CLIENT_TOKEN_KEY = 'abdulloh_visitor_token_v1';
+const NOTES_KEY = 'abdulloh_portfolio_notes_v1';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// GitHub Pages is a static host: API routes are not executed there.
+// Keep the portfolio content in the frontend so every section works without a server.
+const portfolioData: PortfolioBundle = {
+  projects: [
+    {
+      id: 1,
+      project_number: '01',
+      slug: 'kwakiutl-exhibit',
+      title: 'Transformation: The Living Art of the Kwakiutl',
+      category: 'EDUCATIONAL WEBSITE',
+      description: 'An interactive digital museum exhibit exploring Kwakiutl art, culture, and transformation stories.',
+      extended_note: 'An eight-stop exhibition experience with a carefully organized floor plan, artifact descriptions, and a warm charcoal-and-wood visual style.',
+      website_url: 'https://nl7r4t-jswksvqto-intelligence-agentic-models.vercel.app/',
+      preview_image: 'https://placehold.co/1200x750/030712/2997FF?text=KWAKIUTL+EXHIBIT',
+      display_order: 1,
+    },
+  ],
+  achievements: [
+    {
+      id: 1,
+      event_title: 'LIBERTY BELL JUDO CLASSIC',
+      honor: '2ND PLACE — SILVER MEDAL',
+      year: 2026,
+      location_context: 'UNITED STATES · 2026',
+      summary: 'Earned a second-place finish and silver medal at the Liberty Bell Judo Classic.',
+      training_status: 'Continuing to develop judo fundamentals, technique, and discipline through regular practice.',
+    },
+  ],
+  pillars: [
+    { id: 1, section: 'interest', code: '01', title: 'JUDO', subtitle: 'DISCIPLINE', description: 'Building focus, patience, and confidence through training and competition.', display_order: 1 },
+    { id: 2, section: 'interest', code: '02', title: 'PROGRAMMING', subtitle: 'CREATION', description: 'Learning programming step by step and exploring how digital experiences are built.', display_order: 2 },
+    { id: 3, section: 'interest', code: '03', title: 'CYBERSECURITY', subtitle: 'FUTURE GOAL', description: 'Exploring technology and working toward a future in cybersecurity.', display_order: 3 },
+    { id: 4, section: 'interest', code: '04', title: 'DESIGN', subtitle: 'CREATIVITY', description: 'Experimenting with visual ideas, interactive layouts, and digital presentation.', display_order: 4 },
+    { id: 5, section: 'interest', code: '05', title: 'LEARNING', subtitle: 'CURIOSITY', description: 'Developing new skills through study, practice, and personal projects.', display_order: 5 },
+    { id: 6, section: 'interest', code: '06', title: 'SELF-IMPROVEMENT', subtitle: 'CONSISTENCY', description: 'Making steady progress and focusing on becoming better over time.', display_order: 6 },
+    { id: 7, section: 'journey', code: '01', title: 'FOUNDATIONS', subtitle: 'START WITH THE BASICS', description: 'Learning how computers, the web, and programming work, one step at a time.', display_order: 7 },
+    { id: 8, section: 'journey', code: '02', title: 'BUILD & EXPLORE', subtitle: 'TURN IDEAS INTO PROJECTS', description: 'Creating interactive projects while strengthening technical and problem-solving skills.', display_order: 8 },
+    { id: 9, section: 'journey', code: '03', title: 'CYBERSECURITY', subtitle: 'THE LONG-TERM DIRECTION', description: 'Continuing to learn about digital safety and working toward a future in cybersecurity.', display_order: 9 },
+  ],
+};
 
-const staticSupabase =
-  supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+function readNotes(): TransmissionItem[] {
+  try {
+    const raw = localStorage.getItem(NOTES_KEY);
+    return raw ? (JSON.parse(raw) as TransmissionItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeNotes(notes: TransmissionItem[]): void {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
 
 export function getVisitorToken(): string {
   try {
@@ -23,57 +77,11 @@ export function getVisitorToken(): string {
 }
 
 export async function fetchPortfolioBundle(): Promise<PortfolioBundle> {
-  try {
-    const res = await fetch('/api/portfolio');
-    const contentType = res.headers.get('content-type') || '';
-    if (res.ok && contentType.includes('application/json')) {
-      return await res.json();
-    }
-  } catch {
-    // Fall through to direct Supabase query when hosted on static GitHub Pages
-  }
-
-  if (staticSupabase) {
-    const [projectsRes, achievementsRes, pillarsRes] = await Promise.all([
-      staticSupabase.from('portfolio_projects').select('*').order('display_order', { ascending: true }),
-      staticSupabase.from('portfolio_achievements').select('*').order('id', { ascending: true }),
-      staticSupabase.from('portfolio_pillars').select('*').order('display_order', { ascending: true }),
-    ]);
-    if (projectsRes.error) throw projectsRes.error;
-    if (achievementsRes.error) throw achievementsRes.error;
-    if (pillarsRes.error) throw pillarsRes.error;
-    return {
-      projects: projectsRes.data || [],
-      achievements: achievementsRes.data || [],
-      pillars: pillarsRes.data || [],
-    };
-  }
-
-  throw new Error('Unable to load portfolio records.');
+  return portfolioData;
 }
 
 export async function fetchTransmissions(): Promise<TransmissionItem[]> {
-  try {
-    const res = await fetch('/api/transmissions');
-    const contentType = res.headers.get('content-type') || '';
-    if (res.ok && contentType.includes('application/json')) {
-      return await res.json();
-    }
-  } catch {
-    // Fall through to direct Supabase query on static hosts
-  }
-
-  if (staticSupabase) {
-    const { data, error } = await staticSupabase
-      .from('transmissions')
-      .select('id, sender_name, topic, message, client_token, created_at')
-      .order('id', { ascending: false })
-      .limit(20);
-    if (error) throw error;
-    return data || [];
-  }
-
-  throw new Error('Unable to load visitor notes.');
+  return readNotes().sort((a, b) => b.id - a.id).slice(0, 20);
 }
 
 export async function createTransmission(payload: {
@@ -82,36 +90,14 @@ export async function createTransmission(payload: {
   message: string;
   client_token: string;
 }): Promise<TransmissionItem> {
-  try {
-    const res = await fetch('/api/transmissions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to send message');
-      return data;
-    }
-  } catch (err) {
-    if (!staticSupabase) throw err;
-  }
-
-  if (staticSupabase) {
-    const { data, error } = await staticSupabase
-      .from('transmissions')
-      .insert({
-        ...payload,
-        created_at: new Date().toISOString(),
-      })
-      .select('*')
-      .single();
-    if (error) throw error;
-    return data;
-  }
-
-  throw new Error('Failed to send message');
+  const notes = readNotes();
+  const item: TransmissionItem = {
+    ...payload,
+    id: Date.now(),
+    created_at: new Date().toISOString(),
+  };
+  writeNotes([item, ...notes]);
+  return item;
 }
 
 export async function updateTransmission(payload: {
@@ -121,70 +107,24 @@ export async function updateTransmission(payload: {
   message: string;
   client_token: string;
 }): Promise<TransmissionItem> {
-  try {
-    const res = await fetch('/api/transmissions', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update message');
-      return data;
-    }
-  } catch (err) {
-    if (!staticSupabase) throw err;
-  }
-
-  if (staticSupabase) {
-    const { data, error } = await staticSupabase
-      .from('transmissions')
-      .update({
-        sender_name: payload.sender_name,
-        topic: payload.topic,
-        message: payload.message,
-      })
-      .eq('id', payload.id)
-      .eq('client_token', payload.client_token)
-      .select('*')
-      .single();
-    if (error) throw error;
-    return data;
-  }
-
-  throw new Error('Failed to update message');
+  const notes = readNotes();
+  const index = notes.findIndex(
+    (item) => item.id === payload.id && item.client_token === payload.client_token
+  );
+  if (index < 0) throw new Error('This note could not be found on this device.');
+  const updated = { ...notes[index], ...payload };
+  notes[index] = updated;
+  writeNotes(notes);
+  return updated;
 }
 
 export async function deleteTransmission(payload: {
   id: number;
   client_token: string;
 }): Promise<void> {
-  try {
-    const res = await fetch('/api/transmissions', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete message');
-      return;
-    }
-  } catch (err) {
-    if (!staticSupabase) throw err;
-  }
-
-  if (staticSupabase) {
-    const { error } = await staticSupabase
-      .from('transmissions')
-      .delete()
-      .eq('id', payload.id)
-      .eq('client_token', payload.client_token);
-    if (error) throw error;
-    return;
-  }
-
-  throw new Error('Failed to delete message');
+  writeNotes(
+    readNotes().filter(
+      (item) => !(item.id === payload.id && item.client_token === payload.client_token)
+    )
+  );
 }
