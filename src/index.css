@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-obsidian: #020409;
+    --bg-midnight: #050b18;
+    --electric-blue: #2997ff;
+    --silver-bright: #f1f6fd;
+    --silver-mid: #aebcd0;
+  }
+
+  html {
+    background-color: #020409;
+    color: #e6edf7;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #020409;
+    color: #e6edf7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    selection-background-color: rgba(41, 151, 255, 0.3);
+  }
+
+  ::selection {
+    background: rgba(41, 151, 255, 0.32);
+    color: #ffffff;
+  }
+}
+
+.font-display {
+  font-family: 'Syncopate', 'Space Grotesk', sans-serif;
+}
+
+.font-sans {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-serif {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Realistic Brushed Silver & Specular Chrome Headline Finish */
+.metallic-text {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e5eef9 34%,
+    #94a6bf 68%,
+    #dce7f7 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Luxury Smoked Architectural Glass */
+.glass-chrome {
+  background: linear-gradient(
+    145deg,
+    rgba(11, 20, 40, 0.72) 0%,
+    rgba(4, 8, 18, 0.84) 100%
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Custom subtle scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 18, 34, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(41, 151, 255, 0.4);
+  border-radius: 9999px;
+}
+
+@keyframes adPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+.ad-glyph-pulse {
+  animation: adPulse 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .ad-glyph-pulse {
+    animation: none;
+  }
+}
